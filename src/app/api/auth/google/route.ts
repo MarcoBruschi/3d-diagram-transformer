@@ -9,10 +9,19 @@ export const dynamic = 'force-dynamic';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
+function getAppOrigin(req: NextRequest): string {
+  if (process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL.startsWith('http')) {
+    return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
+  }
+  const host = req.headers.get('x-forwarded-host') || req.headers.get('host') || new URL(req.url).host;
+  const proto = req.headers.get('x-forwarded-proto') || (process.env.NODE_ENV === 'production' ? 'https' : 'http');
+  return `${proto}://${host}`;
+}
+
 // GET /api/auth/google - Production-grade Google OAuth 2.0 flow & SSO handler
 export async function GET(req: NextRequest) {
   try {
-    const origin = req.headers.get('origin') || new URL(req.url).origin;
+    const origin = getAppOrigin(req);
     const { searchParams } = new URL(req.url);
     const code = searchParams.get('code');
     const stateParam = searchParams.get('state');
@@ -54,7 +63,7 @@ export async function GET(req: NextRequest) {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        path: '/api/auth/google',
+        path: '/',
         maxAge: 600, // 10 minutes
       });
       return response;

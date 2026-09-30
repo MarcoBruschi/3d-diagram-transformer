@@ -23,6 +23,9 @@ import {
   Mail,
   ExternalLink,
   Box,
+  UploadCloud,
+  CheckCircle2,
+  Activity,
 } from 'lucide-react';
 
 export default function LandingPage() {
@@ -44,62 +47,98 @@ export default function LandingPage() {
         {/* 6-STAGE GSAP SCROLL STORYTELLING */}
         <ScrollStorySection />
 
-        {/* TECHNICAL SPECIFICATION MATRIX COM CONSOLE HUD INTERATIVO */}
+        {/* TECHNICAL SPECIFICATION MATRIX COM CONSOLE HUD INTERATIVO & LEDGER */}
         <SpecMatrix />
 
-        {/* FINAL CALL TO ACTION // CAD MONOLITH (Sem Fundos Foscos, Geometrias 3D Visíveis) */}
-        <section className="relative border-t border-slate-200 dark:border-[#1E273A] bg-white/40 dark:bg-[#05070B]/50 py-28 px-6 text-center transition-colors duration-200 overflow-hidden">
-          <div className="absolute top-8 left-8 font-mono text-xs text-slate-300 dark:text-[#1E273A] select-none">
-            +
+        {/* FINAL CALL TO ACTION // CAD MONOLITH */}
+        <section className="relative border-t border-slate-200 dark:border-[#1E273A] bg-white/50 dark:bg-[#05070B]/70 py-32 px-6 text-center transition-colors duration-200 overflow-hidden">
+          {/* CAD Calibration Callouts */}
+          <div className="absolute top-8 left-8 font-mono text-[10px] text-slate-400 dark:text-[#2A374F] select-none pointer-events-none tracking-wider">
+            DIM // [1920x1080_CANVAS]
           </div>
-          <div className="absolute top-8 right-8 font-mono text-xs text-slate-300 dark:text-[#1E273A] select-none">
-            +
+          <div className="absolute top-8 right-8 font-mono text-[10px] text-slate-400 dark:text-[#2A374F] select-none pointer-events-none tracking-wider">
+            PIPELINE // [SYNCHRONOUS_INGEST]
           </div>
 
-          <div className="mx-auto max-w-3xl space-y-6 relative z-10">
-            <div className="inline-flex items-center gap-2 rounded border border-slate-200 dark:border-[#1E273A] bg-white dark:bg-[#0B0E14] px-3.5 py-1.5 font-mono text-xs text-cyan-700 dark:text-cyan-400">
-              <Terminal className="h-3.5 w-3.5" />
-              <span>ARCHITECTURE TRANSFORMATION RUNTIME</span>
+          <div className="mx-auto max-w-4xl space-y-8 relative z-10">
+            {/* Pill Header */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-[#1E273A] bg-white dark:bg-[#0B0E14] px-4 py-1.5 font-mono text-xs text-cyan-700 dark:text-cyan-400 shadow-xs">
+              <Terminal className="h-3.5 w-3.5 text-cyan-500" />
+              <span>SPATIAL TRANSFORMATION RUNTIME v2.4</span>
             </div>
 
-            <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white uppercase leading-[1.05]">
-              STOP EXPLAINING TOPOLOGY WITH FLAT BOXES.
+            {/* Monumental Headline */}
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white uppercase leading-[1.02]">
+              STOP EXPLAINING TOPOLOGY <br className="hidden sm:inline" />
+              WITH FLAT BOXES.
             </h2>
 
-            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
-              Communicate infrastructure dependencies with absolute clarity. Generate physical spatial models
-              that engineering leads and cloud architects can inspect simultaneously.
+            {/* Subtitle */}
+            <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed font-normal">
+              Communicate infrastructure dependencies with absolute spatial clarity. Generate physical models
+              that engineering leads, SREs, and cloud architects can inspect simultaneously in real-time.
             </p>
 
-            <div className="pt-4 flex justify-center">
+            {/* Dual Magnetic Action Buttons */}
+            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
               <MagneticButton
                 onClick={() => router.push('/studio')}
-                className="inline-flex items-center gap-2.5 rounded-lg bg-cyan-500 hover:bg-cyan-600 dark:bg-cyan-400 dark:hover:bg-cyan-300 text-white dark:text-slate-950 px-8 py-4 font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-[0_0_25px_rgba(0,240,255,0.25)] active:scale-98"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white dark:text-slate-950 px-8 py-4 font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-[0_0_30px_rgba(0,240,255,0.35)] active:scale-98 cursor-pointer"
               >
                 <Layers className="h-4 w-4" />
                 <span>Launch Studio & Ingest Diagram</span>
                 <ArrowRight className="h-4 w-4" />
               </MagneticButton>
+
+              <MagneticButton
+                onClick={() => setShowUploadModal(true)}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-xl border border-slate-300 dark:border-[#1E273A] text-slate-700 dark:text-slate-200 hover:border-cyan-400/50 hover:text-cyan-600 dark:hover:text-cyan-400 bg-white/90 dark:bg-[#0B0E17]/90 px-7 py-4 font-mono text-xs font-semibold transition-all active:scale-98 shadow-xs cursor-pointer"
+              >
+                <UploadCloud className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
+                <span>Upload Blueprint File</span>
+              </MagneticButton>
+            </div>
+
+            {/* Diagnostic Confirmation Strip */}
+            <div className="pt-6 flex flex-wrap items-center justify-center gap-4 sm:gap-8 font-mono text-[11px] text-slate-500 dark:text-slate-400">
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                <span>ZERO_INSTALLATION_REQUIRED</span>
+              </div>
+              <div className="hidden sm:inline text-slate-300 dark:text-[#1E273A]">•</div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                <span>LOCAL_AST_EVALUATION</span>
+              </div>
+              <div className="hidden sm:inline text-slate-300 dark:text-[#1E273A]">•</div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                <span>HARDWARE_ACCELERATED_60FPS</span>
+              </div>
             </div>
           </div>
         </section>
 
         {/* CAD Engineering Footer com Informações Corporativas e Links Legais Clicáveis com Ícones */}
-        <footer className="relative z-30 pointer-events-auto border-t border-slate-200 dark:border-[#1E273A] bg-slate-50 dark:bg-[#05070B] py-12 px-6 font-mono text-xs text-slate-600 dark:text-slate-400 transition-colors duration-200">
-          <div className="mx-auto max-w-7xl space-y-6">
-            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 border-b border-slate-200 dark:border-[#1E273A] pb-6">
-              <div className="space-y-1.5">
+        <footer className="relative z-30 pointer-events-auto border-t border-slate-200 dark:border-[#1E273A] bg-slate-50 dark:bg-[#05070B] py-14 px-6 font-mono text-xs text-slate-600 dark:text-slate-400 transition-colors duration-200">
+          <div className="mx-auto max-w-7xl space-y-8">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 border-b border-slate-200 dark:border-[#1E273A] pb-8">
+              <div className="space-y-2">
                 <Link
                   href="/"
                   className="inline-flex items-center gap-2 text-slate-900 dark:text-white font-bold hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors cursor-pointer"
                 >
                   <Box className="h-4 w-4 text-cyan-500" aria-hidden="true" />
-                  <span className="tracking-wider uppercase">PRISM Technologies Inc.</span>
+                  <span className="tracking-wider uppercase text-sm">PRISM Technologies Inc.</span>
                 </Link>
-                <p className="text-[11px] text-slate-500 flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
+                  <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    ALL SYSTEMS OPERATIONAL
+                  </span>
+                  <span>•</span>
                   <span>Enterprise Cloud Architecture Spatial Twins</span>
                   <span>•</span>
-                  <span>Suporte & Jurídico:</span>
                   <a
                     href="mailto:legal@prism.app"
                     className="inline-flex items-center gap-1 text-cyan-600 dark:text-cyan-400 hover:underline font-semibold cursor-pointer"
@@ -107,11 +146,11 @@ export default function LandingPage() {
                     <Mail className="h-3 w-3" aria-hidden="true" />
                     <span>legal@prism.app</span>
                   </a>
-                </p>
+                </div>
               </div>
 
-              {/* Botões/Ícones das Páginas Legais (100% Clicáveis e Acessíveis) */}
-              <nav aria-label="Navegação de Políticas Legais" className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px]">
+              {/* Botões/Ícones das Páginas Legais */}
+              <nav aria-label="Navegação de Políticas Legais" className="flex flex-wrap items-center gap-2 sm:gap-2.5 text-[11px]">
                 <Link
                   href="/privacy"
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-[#1E273A] bg-white dark:bg-[#0B0E14] text-slate-700 dark:text-slate-300 hover:border-cyan-500 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-cyan-50/50 dark:hover:bg-cyan-500/10 transition-all cursor-pointer shadow-2xs focus-visible:ring-2 focus-visible:ring-cyan-500 outline-none"

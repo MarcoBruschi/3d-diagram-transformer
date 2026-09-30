@@ -6,17 +6,14 @@ import { Layers, ArrowRight, UploadCloud } from 'lucide-react';
 import { MagneticButton } from '@/components/animations/MagneticButton';
 import { SplitTextReveal } from '@/components/animations/SplitTextReveal';
 
-const ECOSYSTEM_ITEMS = [
-  'KUBERNETES v1.31',
-  'AWS CLOUD TOPOLOGY',
-  'APACHE KAFKA CONDUITS',
-  'DOCKER COMPOSE',
-  'HASHICORP TERRAFORM',
-  'WEBGL 2.0 SHADERS',
-  'PLANTUML AST',
-  'MERMAID.JS SPEC',
-  'OPENTELEMETRY TRACES',
-  'POSTGRESQL CLUSTERS',
+const COMPATIBILITY_PROTOCOLS = [
+  { name: 'PlantUML AST', status: 'SYNTHESIS' },
+  { name: 'Mermaid.js Engine', status: 'PARSED' },
+  { name: 'AWS Topology JSON', status: 'MAPPED' },
+  { name: 'Kubernetes v1.31', status: 'INGESTED' },
+  { name: 'HashiCorp Terraform', status: 'DISPATCH' },
+  { name: 'Docker Compose Spec', status: 'RESOLVED' },
+  { name: 'WebGL 2.0 Kinematics', status: '60_FPS' },
 ];
 
 interface HeroSectionProps {
@@ -30,50 +27,52 @@ export function HeroSection({ onUploadClick }: HeroSectionProps) {
     <section
       id="main-content"
       tabIndex={-1}
-      className="relative min-h-[96vh] pt-32 pb-16 flex flex-col justify-between px-6 lg:px-16 overflow-hidden pointer-events-auto outline-none"
+      className="relative min-h-[96vh] pt-32 pb-14 flex flex-col justify-between px-6 lg:px-16 overflow-hidden pointer-events-auto outline-none"
     >
-      {/* Cruzes de Calibração nos 4 Vértices CAD */}
-      <div className="absolute top-20 left-6 font-mono text-sm text-slate-400 dark:text-[#1E273A] select-none pointer-events-none">
-        +
+      {/* Precision CAD Calibration Callouts */}
+      <div className="absolute top-20 left-8 font-mono text-[10px] text-slate-400 dark:text-[#2A374F] select-none pointer-events-none tracking-widest">
+        SYS.LOC // [41°24'12.2"N 2°10'26.5"E]
       </div>
-      <div className="absolute top-20 right-6 font-mono text-sm text-slate-400 dark:text-[#1E273A] select-none pointer-events-none">
-        +
-      </div>
-      <div className="absolute bottom-6 left-6 font-mono text-sm text-slate-400 dark:text-[#1E273A] select-none pointer-events-none">
-        +
-      </div>
-      <div className="absolute bottom-6 right-6 font-mono text-sm text-slate-400 dark:text-[#1E273A] select-none pointer-events-none">
-        +
+      <div className="absolute top-20 right-8 font-mono text-[10px] text-slate-400 dark:text-[#2A374F] select-none pointer-events-none tracking-widest">
+        VIEWPORT // [6DOF_SPATIAL_SYNC]
       </div>
 
-      {/* Container Central com Conteúdo Flutuando Diretamente sobre o Espaço 3D (Sem Fundos Foscos) */}
-      <div className="mx-auto max-w-7xl w-full my-auto py-12 relative z-10">
+      {/* Center Monumental Content Flow */}
+      <div className="mx-auto max-w-7xl w-full my-auto py-10 relative z-10">
         <div className="max-w-3xl space-y-8">
-          {/* Tipografia Monumental com Máscara e Cores Nítidas em Ambos os Modos */}
+          {/* Eyebrow Pill */}
+          <div className="inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-[#1E273A] bg-white/90 dark:bg-[#0B0E17]/90 px-3.5 py-1.5 font-mono text-[11px] text-cyan-600 dark:text-cyan-400 shadow-xs">
+            <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#00F0FF]" />
+            <span className="font-semibold tracking-wider uppercase">SPATIAL INFRASTRUCTURE RUNTIME</span>
+            <span className="text-slate-400 dark:text-slate-600">•</span>
+            <span className="text-slate-500">v2.4 ACTIVE</span>
+          </div>
+
+          {/* Monumental Headline */}
           <div className="space-y-1">
             <SplitTextReveal
-              delay={0.1}
-              duration={1.0}
-              className="font-black tracking-[-0.04em] leading-[0.92] text-slate-900 dark:text-white uppercase text-[clamp(2.75rem,7.2vw,6.5rem)] select-none"
+              delay={0.05}
+              duration={0.9}
+              className="font-black tracking-[-0.04em] leading-[0.92] text-slate-900 dark:text-white uppercase text-[clamp(2.85rem,7.4vw,6.6rem)] select-none"
             >
               <div>FROM FLAT SCHEMATICS</div>
-              <div className="text-cyan-600 dark:text-cyan-400 drop-shadow-[0_0_35px_rgba(0,240,255,0.35)]">
+              <div className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-sky-500 to-violet-600 dark:from-cyan-400 dark:via-sky-300 dark:to-violet-400 drop-shadow-[0_0_35px_rgba(0,240,255,0.3)]">
                 INTO LIVING 3D TWINS.
               </div>
             </SplitTextReveal>
           </div>
 
-          {/* Parágrafo de Posicionamento Técnico com Alto Contraste */}
+          {/* High-Contrast Technical Positioning */}
           <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed font-normal select-none">
-            Upload technical flowcharts, PlantUML specs, or cloud diagrams. Eliminate cognitive fatigue
-            and debug complex distributed topologies with interactive physical 3D twins.
+            Transform abstract architecture schematics into interactive 3D spatial twins with live telemetry,
+            multi-tenant cursors, and physics-driven particle conduits. Eliminate diagram rot forever.
           </p>
 
-          {/* Grupo de Ações Primárias com Botões Magnéticos Adaptativos */}
+          {/* Primary Action Group */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
             <MagneticButton
               onClick={() => router.push('/studio')}
-              className="flex items-center justify-center gap-2.5 rounded-lg bg-cyan-500 hover:bg-cyan-600 dark:bg-cyan-400 dark:hover:bg-cyan-300 text-white dark:text-slate-950 px-7 py-4 font-mono text-xs font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.25)] transition-all active:scale-98"
+              className="flex items-center justify-center gap-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white dark:text-slate-950 px-8 py-4 font-mono text-xs font-bold uppercase tracking-wider shadow-[0_0_25px_rgba(0,240,255,0.35)] transition-all active:scale-98"
             >
               <Layers className="h-4 w-4" />
               <span>Launch Spatial Studio</span>
@@ -82,52 +81,65 @@ export function HeroSection({ onUploadClick }: HeroSectionProps) {
 
             <MagneticButton
               onClick={onUploadClick}
-              className="flex items-center justify-center gap-2.5 rounded-lg border border-slate-300 dark:border-cyan-400/40 text-slate-800 dark:text-cyan-300 hover:border-cyan-500 hover:text-cyan-600 dark:hover:text-white bg-white/80 dark:bg-transparent hover:bg-slate-50 dark:hover:bg-cyan-950/30 px-7 py-4 font-mono text-xs font-semibold transition-all active:scale-98 shadow-xs"
+              className="flex items-center justify-center gap-2.5 rounded-xl border border-slate-300 dark:border-[#1E273A] text-slate-700 dark:text-slate-200 hover:border-cyan-400/50 hover:text-cyan-600 dark:hover:text-cyan-400 bg-white/80 dark:bg-[#0B0E17]/80 px-7 py-4 font-mono text-xs font-semibold transition-all active:scale-98 shadow-xs"
             >
               <UploadCloud className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
               <span>Upload Blueprint</span>
             </MagneticButton>
           </div>
 
-          {/* Strip de Telemetria de Engenharia Minimalista Flutuante */}
-          <div className="pt-8 border-t border-slate-200 dark:border-cyan-500/20 font-mono text-xs grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-2xl">
+          {/* Technical Telemetry Strip */}
+          <div className="pt-8 border-t border-slate-200 dark:border-[#1E273A]/80 font-mono text-xs grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-2xl">
             <div className="space-y-0.5">
-              <div className="text-lg font-bold text-slate-900 dark:text-white">12+</div>
-              <div className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              <div className="text-lg font-bold text-slate-900 dark:text-white">18+</div>
+              <div className="text-[10px] text-slate-500 uppercase tracking-wider">
                 Semantic Meshes
               </div>
             </div>
             <div className="space-y-0.5">
               <div className="text-lg font-bold text-cyan-600 dark:text-cyan-400">60 FPS</div>
-              <div className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              <div className="text-[10px] text-slate-500 uppercase tracking-wider">
                 WebGL 2.0 Engine
               </div>
             </div>
             <div className="space-y-0.5">
               <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">1:1</div>
-              <div className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                2D / 3D Sync Parity
+              <div className="text-[10px] text-slate-500 uppercase tracking-wider">
+                Spatial Parity
               </div>
             </div>
             <div className="space-y-0.5">
               <div className="text-lg font-bold text-slate-900 dark:text-white">0.08 LERP</div>
-              <div className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                Inertial Kinematics
+              <div className="text-[10px] text-slate-500 uppercase tracking-wider">
+                Inertial Damping
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Continuous Ecosystem Marquee Ticker */}
-      <div className="mx-auto max-w-7xl w-full pt-6 border-t border-slate-200 dark:border-slate-800/60 overflow-hidden relative select-none">
-        <div className="flex items-center gap-8 whitespace-nowrap animate-[marquee_35s_linear_infinite] font-mono text-xs text-slate-600 dark:text-slate-400">
-          {ECOSYSTEM_ITEMS.concat(ECOSYSTEM_ITEMS).map((item, idx) => (
-            <div key={idx} className="flex items-center gap-2">
-              <span className="text-cyan-600 dark:text-cyan-400">•</span>
-              <span>{item}</span>
-            </div>
-          ))}
+      {/* Interactive CAD Compatibility Docking Strip (Replaces Generic Marquee) */}
+      <div className="mx-auto max-w-7xl w-full pt-6 border-t border-slate-200 dark:border-[#1E273A] select-none">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono text-[11px]">
+          <div className="flex items-center gap-2 text-slate-500">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            <span className="uppercase tracking-wider font-semibold">SUPPORTED SCHEMATIC PROTOCOLS:</span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {COMPATIBILITY_PROTOCOLS.map((proto) => (
+              <div
+                key={proto.name}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#1E273A] bg-white/70 dark:bg-[#0B0E17]/70 text-slate-700 dark:text-slate-300 font-mono text-[10px] transition-colors hover:border-cyan-400/40"
+              >
+                <span className="text-cyan-500 dark:text-cyan-400 font-bold">•</span>
+                <span>{proto.name}</span>
+                <span className="text-[9px] px-1 py-0.2 rounded bg-slate-100 dark:bg-[#161F30] text-slate-500 font-mono">
+                  {proto.status}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
