@@ -13,7 +13,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=for-the-badge&logo=typescript)](https://typescriptlang.org)
 [![License](https://img.shields.io/badge/License-MIT-emerald?style=for-the-badge)](LICENSE)
 
-🔗 **Aplicação em Produção na Vercel:** [https://prism-teal-one.vercel.app](https://prism-teal-one.vercel.app)
+🔗 **Aplicação em Produção na Vercel:** [https://prism-six-eta.vercel.app](https://prism-six-eta.vercel.app)
 
 ---
 
