@@ -1,0 +1,247 @@
+// Prisma Schema for 3D Diagram Transformer SaaS
+// Option B: Node.js + PostgreSQL + Redis (Full SaaS Tier 1 & 2)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Organization {
+  id                 String       @id @default(uuid()) @db.Uuid
+  slug               String       @unique
+  inviteToken        String?      @unique @map("invite_token")
+  name               String
+  plan               String       @default("free") // 'free' | 'pro' | 'enterprise'
+  stripeCustomerId   String?      @map("stripe_customer_id")
+  subscriptionStatus String?      @map("subscription_status") // 'active' | 'past_due' | 'canceled'
+  subscriptionId     String?      @map("subscription_id")
+  priceId            String?      @map("price_id")
+  currentPeriodEnd   DateTime?    @map("current_period_end") @db.Timestamptz(6)
+  createdAt          DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  users              User[]
+  members            OrganizationMember[]
+  diagrams           Diagram[]
+  templates          DiagramTemplate[]
+  telemetrySources   TelemetrySource[]
+  auditLogs          AuditLog[]
+
+  @@map("organizations")
+}
+
+model User {
+  id              String         @id @default(uuid()) @db.Uuid
+  organizationId  String         @map("organization_id") @db.Uuid
+  email           String         @unique
+  name            String?
+  avatarUrl       String?        @map("avatar_url")
+  role            String         @default("editor") // 'admin' | 'editor' | 'viewer'
+  provider        String         @default("email")  // 'google' | 'github' | 'email'
+  providerId      String?        @map("provider_id")
+  passwordHash    String?        @map("password_hash")
+  emailVerified   Boolean        @default(false) @map("email_verified")
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  memberships     OrganizationMember[]
+  diagramsCreated Diagram[]      @relation("DiagramCreator")
+  versionsCreated DiagramVersion[] @relation("VersionCreator")
+  collaborations  DiagramCollaborator[]
+  comments        DiagramComment[]
+  adrsCreated     DiagramAdr[]
+  templates       DiagramTemplate[]
+  auditLogs       AuditLog[]
+
+  @@index([organizationId], name: "idx_users_org")
+  @@map("users")
+}
+
+model Diagram {
+  id              String               @id @default(uuid()) @db.Uuid
+  organizationId  String               @map("organization_id") @db.Uuid
+  createdBy       String?              @map("created_by") @db.Uuid
+  name            String
+  description     String?
+  type            String               @default("custom")
+  data            Json                 @default("{\"nodes\":[],\"connections\":[]}")
+  nodeCount       Int                  @default(0) @map("node_count")
+  isPublic        Boolean              @default(false) @map("is_public")
+  shareToken      String?              @unique @map("share_token")
+  thumbnailUrl    String?              @map("thumbnail_url")
+  createdAt       DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime             @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization    Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  creator         User?                @relation("DiagramCreator", fields: [createdBy], references: [id], onDelete: SetNull)
+  versions        DiagramVersion[]
+  collaborators   DiagramCollaborator[]
+  comments        DiagramComment[]
+  metrics         NodeMetric[]
+  adrs            DiagramAdr[]
+
+  @@index([organizationId], name: "idx_diagrams_org")
+  @@index([organizationId, updatedAt(sort: Desc)], name: "idx_diagrams_org_updated")
+  @@index([createdBy], name: "idx_diagrams_user")
+  @@index([shareToken], name: "idx_diagrams_share_token")
+  @@map("diagrams")
+}
+
+model DiagramVersion {
+  id          String    @id @default(uuid()) @db.Uuid
+  diagramId   String    @map("diagram_id") @db.Uuid
+  version     Int
+  data        Json
+  createdBy   String?   @map("created_by") @db.Uuid
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  diagram     Diagram   @relation(fields: [diagramId], references: [id], onDelete: Cascade)
+  creator     User?     @relation("VersionCreator", fields: [createdBy], references: [id], onDelete: SetNull)
+
+  @@unique([diagramId, version])
+  @@index([diagramId], name: "idx_diagram_versions_diagram")
+  @@index([diagramId, version(sort: Desc)], name: "idx_diagram_versions_diagram_version")
+  @@map("diagram_versions")
+}
+
+model DiagramCollaborator {
+  diagramId   String    @map("diagram_id") @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  permission  String    @default("editor") // 'editor' | 'viewer'
+  invitedAt   DateTime  @default(now()) @map("invited_at") @db.Timestamptz(6)
+
+  diagram     Diagram   @relation(fields: [diagramId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([diagramId, userId])
+  @@map("diagram_collaborators")
+}
+
+model DiagramComment {
+  id          String    @id @default(uuid()) @db.Uuid
+  diagramId   String    @map("diagram_id") @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  nodeId      String?   @map("node_id") // Anchored to a specific 3D component node
+  position3D  Json?     @map("position_3d") // { x: number, y: number, z: number }
+  content     String
+  resolved    Boolean   @default(false)
+  mentions    Json?     // Array of mentioned userIds
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  diagram     Diagram   @relation(fields: [diagramId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([diagramId], name: "idx_comments_diagram")
+  @@index([diagramId, resolved, createdAt(sort: Asc)], name: "idx_comments_diagram_resolved")
+  @@map("diagram_comments")
+}
+
+model DiagramTemplate {
+  id             String        @id @default(uuid()) @db.Uuid
+  name           String
+  description    String?
+  category       String        @default("general") // 'aws' | 'kubernetes' | 'ai-rag' | 'microservices' | 'iot'
+  data           Json
+  thumbnailUrl   String?       @map("thumbnail_url")
+  isPublic       Boolean       @default(true) @map("is_public")
+  downloadsCount Int           @default(0) @map("downloads_count")
+  organizationId String?       @map("organization_id") @db.Uuid // null = public community template
+  createdBy      String?       @map("created_by") @db.Uuid
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  creator        User?         @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+
+  @@index([category], name: "idx_templates_category")
+  @@map("diagram_templates")
+}
+
+model TelemetrySource {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  name           String       // e.g. "Datadog Production", "Prometheus K8s"
+  apiKey         String       @unique @map("api_key")
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([apiKey], name: "idx_telemetry_apikey")
+  @@map("telemetry_sources")
+}
+
+model NodeMetric {
+  id          String   @id @default(uuid()) @db.Uuid
+  diagramId   String   @map("diagram_id") @db.Uuid
+  nodeId      String   @map("node_id") // Node ID within the diagram
+  metricName  String   @map("metric_name") // e.g. "cpu_usage", "latency_p99", "error_rate"
+  value       Float
+  unit        String?  // e.g. "%", "ms", "rpm"
+  status      String   @default("healthy") // 'healthy' | 'warning' | 'critical' | 'offline'
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  diagram     Diagram  @relation(fields: [diagramId], references: [id], onDelete: Cascade)
+
+  @@unique([diagramId, nodeId, metricName])
+  @@index([diagramId], name: "idx_metrics_diagram")
+  @@index([diagramId, updatedAt(sort: Desc)], name: "idx_metrics_diagram_updated")
+  @@map("node_metrics")
+}
+
+model DiagramAdr {
+  id          String   @id @default(uuid()) @db.Uuid
+  diagramId   String   @map("diagram_id") @db.Uuid
+  title       String
+  status      String   @default("accepted") // 'proposed' | 'accepted' | 'deprecated' | 'superseded'
+  context     String   // Context and problem statement
+  decision    String   // Architectural decision taken
+  consequences String  // Positive and negative consequences
+  createdBy   String?  @map("created_by") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  diagram     Diagram  @relation(fields: [diagramId], references: [id], onDelete: Cascade)
+  creator     User?    @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+
+  @@index([diagramId], name: "idx_adrs_diagram")
+  @@map("diagram_adrs")
+}
+
+model AuditLog {
+  id          String        @id @default(uuid()) @db.Uuid
+  userId      String?       @map("user_id") @db.Uuid
+  orgId       String?       @map("org_id") @db.Uuid
+  action      String        // 'diagram.create', 'billing.upgrade', 'telemetry.ingest', etc.
+  resourceId  String?       @map("resource_id") @db.Uuid
+  metadata    Json?
+  ipAddress   String?       @map("ip_address")
+  userAgent   String?       @map("user_agent")
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user        User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  organization Organization? @relation(fields: [orgId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt(sort: Desc)], name: "idx_audit_logs_user")
+  @@index([orgId, createdAt(sort: Desc)], name: "idx_audit_logs_org_created")
+  @@map("audit_logs")
+}
+
+model OrganizationMember {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  userId         String       @map("user_id") @db.Uuid
+  role           String       @default("editor") // 'admin' | 'editor' | 'viewer'
+  isDefault      Boolean      @default(false) @map("is_default") // Indica se é o workspace pessoal padrão
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId], name: "uq_org_member")
+  @@map("organization_members")
+}

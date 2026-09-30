@@ -1,0 +1,81 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: diagram3d_app
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      # Internal network connections to postgres and redis services
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-diagram_user}:${POSTGRES_PASSWORD:-diagram_secret_password}@postgres:5432/${POSTGRES_DB:-diagram_db}?schema=public"
+      REDIS_URL: "redis://:${REDIS_PASSWORD:-redis_secret_password}@redis:6379"
+      # JWT Secrets (defaults for instant local dev, override via .env for production)
+      JWT_SECRET: ${JWT_SECRET:-super-secure-3d-diagram-jwt-secret-min-32-chars}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-super-secure-refresh-secret-min-32-chars}
+      # Optional external integrations (passed from host .env if configured)
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      STRIPE_PRICE_PRO_MONTHLY: ${STRIPE_PRICE_PRO_MONTHLY:-}
+      STRIPE_PRICE_PRO_YEARLY: ${STRIPE_PRICE_PRO_YEARLY:-}
+      # Runtime
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: "0.0.0.0"
+      AUTO_SEED: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - diagram3d_net
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: diagram3d_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-diagram_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-diagram_secret_password}
+      POSTGRES_DB: ${POSTGRES_DB:-diagram_db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-diagram_user} -d ${POSTGRES_DB:-diagram_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - diagram3d_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: diagram3d_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_secret_password}
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_secret_password}", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - diagram3d_net
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  diagram3d_net:
+    driver: bridge
