@@ -10,10 +10,7 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
 function getAppOrigin(req: NextRequest): string {
-  if (process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL.startsWith('http')) {
-    return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
-  }
-  const host = req.headers.get('x-forwarded-host') || req.headers.get('host') || new URL(req.url).host;
+  const host = req.headers.get('x-forwarded-host') || req.headers.get('host') || (process.env.NEXT_PUBLIC_APP_URL ? new URL(process.env.NEXT_PUBLIC_APP_URL).host : new URL(req.url).host);
   const proto = req.headers.get('x-forwarded-proto') || (process.env.NODE_ENV === 'production' ? 'https' : 'http');
   return `${proto}://${host}`;
 }
